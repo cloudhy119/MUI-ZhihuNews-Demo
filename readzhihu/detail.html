@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" :href="css[0]"/>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script type="text/javascript" src="js/mui.min.js"></script>
+		<script src="https://cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/custom.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">新闻内容</h1>
+		</header>
+		<div class="mui-content">
+			<img :src="image" style="width: 100%;"/>
+		    <div id="newsText"></div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var vm1 = new Vue({
+				el: 'head',
+				data: {
+					css: []
+				}
+			});
+			var vm2 = new Vue({
+				el: '.mui-content',
+				data: {
+					image: ''
+				}
+			})
+			//添加newId自定义事件监听
+			window.addEventListener('newsId', function(event) {
+				//获得事件参数
+				var id = event.detail.id;
+				mui.ajax('https://news-at.zhihu.com/api/4/news/' + id, {
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					success: function(data) {
+						vm1.css = data.css;
+						vm2.image = data.image;
+						console.log(vm2.image);
+						document.getElementById("newsText").innerHTML = data.body;
+					},
+					error: function(xhr, type, errorThrown) {
+						//异常处理；
+						console.log(type);
+					}
+				});
+			});
+		</script>
+	</body>
+
+</html>
